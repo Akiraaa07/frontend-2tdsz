@@ -3,7 +3,7 @@ import { FlatList, Text, Box, Spinner, ScrollView, Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import TarefaItem from './TarefaItem';
 import AsyncStorage from "@react-native-community/async-storage";
-import AdicionarTarefa from './AdicionarTarefa'; // Importar o componente AdicionarTarefa
+import AdicionarTarefa from './AdicionarTarefa';
 
 interface Tarefa {
   id: number;
@@ -18,7 +18,7 @@ const ListaTarefas: React.FC = () => {
 
   const fetchTarefas = async () => {
     try {
-      setLoading(true); // Inicia o loading quando recarrega
+      setLoading(true);
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         navigation.navigate('LoginScreen');
@@ -50,7 +50,7 @@ const ListaTarefas: React.FC = () => {
   }, []);
 
   const handleAdicionarTarefa = () => {
-    fetchTarefas(); // Atualiza a lista quando uma nova tarefa é adicionada
+    fetchTarefas();
   };
 
   const handleDelete = async (id: number) => {
@@ -92,6 +92,51 @@ const ListaTarefas: React.FC = () => {
     }
   };
 
+  const handleUpdate = async (id: number, novoTitulo: string) => {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      console.error('Token não encontrado!');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/tarefas/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tarefa: novoTitulo }),
+      });
+
+      if (response.ok) {
+        setTarefas(prevTarefas =>
+          prevTarefas.map(tarefa =>
+            tarefa.id === id ? { ...tarefa, tarefa: novoTitulo } : tarefa
+          )
+        );
+        Toast.show({
+          description: 'Tarefa atualizada com sucesso!',
+          bgColor: "green.500"
+        });
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao atualizar a tarefa:', errorData);
+        Toast.show({
+          description: 'Não foi possível atualizar a tarefa. Tente novamente.',
+          bgColor: "red.500"
+        });
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      Toast.show({
+        description: 'Ocorreu um erro. Tente novamente.',
+        bgColor: "red.500"
+      });
+    }
+  };
+
   if (loading) {
     return <Spinner color="blue.500" />;
   }
@@ -106,7 +151,6 @@ const ListaTarefas: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      {/* Adicionando o componente de adicionar tarefa */}
       <AdicionarTarefa onAdicionarTarefa={handleAdicionarTarefa} />
 
       <FlatList
@@ -115,8 +159,8 @@ const ListaTarefas: React.FC = () => {
           <TarefaItem
             id={item.id}
             titulo={item.tarefa}
-            onUpdate={() => { /* Lógica para atualizar tarefa */ }}
-            onDelete={handleDelete} // Passa a função de exclusão
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
