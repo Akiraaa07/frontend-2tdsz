@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -39,6 +39,8 @@ const LoginScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('assets/logo.png')} style={styles.logo} />
+
       <Text style={styles.title}>Login</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -70,7 +72,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f9f9f9', 
+    backgroundColor: '#f9f9f9',
+  },
+  logo: {
+    width: 150,
+    height: 150,  
+    alignSelf: 'center', 
+    marginBottom: 20,  
   },
   title: {
     fontSize: 28,
@@ -89,7 +97,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#007BFF', 
+    backgroundColor: '#2d2c55 ',
     paddingVertical: 12,
     borderRadius: 5,
     alignItems: 'center',
