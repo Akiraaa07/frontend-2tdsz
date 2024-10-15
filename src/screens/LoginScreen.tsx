@@ -31,7 +31,7 @@ const LoginScreen: React.FC = () => {
       const { token } = await response.json();
       await AsyncStorage.setItem('token', token);
       setError(null);
-      navigation.navigate('TarefasScreen');
+      navigation.navigate('TarefasScreen'); // Navega para a tela de tarefas após o login bem-sucedido
     } catch (error) {
       setError('Erro de autenticação. Verifique suas credenciais.');
     }
@@ -40,8 +40,8 @@ const LoginScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Image source={require('assets/logo.png')} style={styles.logo} />
-
       <Text style={styles.title}>Login</Text>
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Username"
@@ -59,9 +59,11 @@ const LoginScreen: React.FC = () => {
           style={styles.input}
         />
       </View>
+  
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}>Enviar</Text>
       </TouchableOpacity>
+
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -76,9 +78,9 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 150,
-    height: 150,  
-    alignSelf: 'center', 
-    marginBottom: 20,  
+    height: 150,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#2d2c55 ',
+    backgroundColor: '#2d2c55',
     paddingVertical: 12,
     borderRadius: 5,
     alignItems: 'center',
