@@ -1,5 +1,7 @@
+// src/components/LoginScreen.tsx
+
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, Button, Text, ImageBackground, StyleSheet } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -20,7 +22,7 @@ const LoginScreen: React.FC = () => {
         body: JSON.stringify({
           username,
           password,
-          role: 'user',
+          role: 'user'
         }),
       });
 
@@ -31,26 +33,25 @@ const LoginScreen: React.FC = () => {
       const { token } = await response.json();
       await AsyncStorage.setItem('token', token);
       setError(null);
-      navigation.navigate('TarefasScreen'); // Navega para a tela de tarefas após o login bem-sucedido
+      navigation.navigate('TarefasScreen');
     } catch (error) {
       setError('Erro de autenticação. Verifique suas credenciais.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require('assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Login</Text>
-
-      <View style={styles.inputContainer}>
+    <ImageBackground
+      source={require('../../assets/bg-tela-login.jpg')}
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Bem-vindo!</Text>
         <TextInput
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
           style={styles.input}
         />
-      </View>
-      <View style={styles.inputContainer}>
         <TextInput
           placeholder="Senha"
           value={password}
@@ -58,60 +59,44 @@ const LoginScreen: React.FC = () => {
           secureTextEntry
           style={styles.input}
         />
+        <Button title="Login" onPress={handleLogin} />
+        {error && <Text style={styles.error}>{error}</Text>}
       </View>
-  
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Enviar</Text>
-      </TouchableOpacity>
-
-      {error && <Text style={styles.errorText}>{error}</Text>}
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
+    resizeMode: 'cover', // Ajusta a imagem para cobrir a tela inteira
     justifyContent: 'center',
+  },
+  container: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fundo branco com transparência
     padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  inputContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    paddingLeft: 10,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#2d2c55',
-    paddingVertical: 12,
-    borderRadius: 5,
+    marginHorizontal: 20,
+    borderRadius: 10,
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
   },
-  errorText: {
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+  },
+  error: {
     color: 'red',
-    textAlign: 'center',
     marginTop: 10,
   },
 });

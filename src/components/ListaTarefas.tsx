@@ -3,7 +3,7 @@ import { FlatList, Text, Box, Spinner, ScrollView, Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import TarefaItem from './TarefaItem';
 import AsyncStorage from "@react-native-community/async-storage";
-import AdicionarTarefa from './AdicionarTarefa';
+import AdicionarTarefa from './AdicionarTarefa'; // Importar o componente AdicionarTarefa
 
 interface Tarefa {
   id: number;
@@ -18,7 +18,7 @@ const ListaTarefas: React.FC = () => {
 
   const fetchTarefas = async () => {
     try {
-      setLoading(true);
+      setLoading(true); // Inicia o loading quando recarrega
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         navigation.navigate('LoginScreen');
@@ -50,7 +50,7 @@ const ListaTarefas: React.FC = () => {
   }, []);
 
   const handleAdicionarTarefa = () => {
-    fetchTarefas();
+    fetchTarefas(); // Atualiza a lista quando uma nova tarefa é adicionada
   };
 
   const handleDelete = async (id: number) => {
@@ -93,23 +93,31 @@ const ListaTarefas: React.FC = () => {
   };
 
   const handleUpdate = async (id: number, novoTitulo: string) => {
-    const token = await AsyncStorage.getItem('token');
-
-    if (!token) {
-      console.error('Token não encontrado!');
-      return;
-    }
-
     try {
+      // Obtém o token de autenticação do AsyncStorage
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        console.error('Token não encontrado!');
+        Toast.show({
+          description: 'Erro de autenticação. Faça login novamente.',
+          bgColor: "red.500",
+        });
+        navigation.navigate('LoginScreen');
+        return;
+      }
+
+      // Faz a requisição PUT para atualizar a tarefa
       const response = await fetch(`http://localhost:3000/api/tarefas/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ tarefa: novoTitulo }),
+        body: JSON.stringify({ tarefa: novoTitulo }), // Enviando o novo título no formato esperado
       });
 
+      // Verifica a resposta da API
       if (response.ok) {
         setTarefas(prevTarefas =>
           prevTarefas.map(tarefa =>
@@ -118,21 +126,21 @@ const ListaTarefas: React.FC = () => {
         );
         Toast.show({
           description: 'Tarefa atualizada com sucesso!',
-          bgColor: "green.500"
+          bgColor: "green.500",
         });
       } else {
         const errorData = await response.json();
         console.error('Erro ao atualizar a tarefa:', errorData);
         Toast.show({
-          description: 'Não foi possível atualizar a tarefa. Tente novamente.',
-          bgColor: "red.500"
+          description: 'Erro ao atualizar a tarefa. Verifique os dados e tente novamente.',
+          bgColor: "red.500",
         });
       }
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      console.error('Erro ao fazer a requisição:', error);
       Toast.show({
-        description: 'Ocorreu um erro. Tente novamente.',
-        bgColor: "red.500"
+        description: 'Erro ao se comunicar com o servidor. Tente novamente.',
+        bgColor: "red.500",
       });
     }
   };
@@ -152,19 +160,17 @@ const ListaTarefas: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <AdicionarTarefa onAdicionarTarefa={handleAdicionarTarefa} />
-
       <FlatList
         data={tarefas}
         renderItem={({ item }) => (
           <TarefaItem
             id={item.id}
             titulo={item.tarefa}
-            onUpdate={handleUpdate}
+            onUpdate={(id, novoTitulo) => handleUpdate(id, novoTitulo)}
             onDelete={handleDelete}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
       />
     </ScrollView>
   );

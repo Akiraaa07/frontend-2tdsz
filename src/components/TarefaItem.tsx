@@ -6,7 +6,7 @@ interface TarefaItemProps {
   id: number;
   titulo: string;
   onUpdate: (id: number, tarefa: string) => void;
-  onDelete: (id: number) => Promise<void>; // Atualize a assinatura para retornar uma Promise
+  onDelete: (id: number) => Promise<void>;
 }
 
 const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete }) => {
@@ -18,7 +18,7 @@ const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete 
   const handleUpdate = async () => {
     if (newTarefa.trim() === "") return; // Validação simples para evitar título vazio
     await onUpdate(id, newTarefa); // Chama a função de atualização recebida via props
-    setIsEditMode(false); // Sai do modo de edição
+    setIsEditMode(false); // Sai do modo de edição e mostra o ícone de editar novamente
   };
 
   // Função para lidar com a exclusão da tarefa
@@ -44,10 +44,12 @@ const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete 
           <Input
             value={newTarefa}
             onChangeText={setNewTarefa}
-            onBlur={() => setIsEditMode(false)} // Sai do modo de edição ao perder o foco
             autoFocus
           />
-          <IconButton icon={<AntDesign name="check" size={24} />} onPress={handleUpdate} />
+          <IconButton 
+            icon={<AntDesign name="check" size={24} />} 
+            onPress={handleUpdate} 
+          />
         </HStack>
       ) : (
         // Exibe o título da tarefa se não estiver no modo de edição
@@ -56,10 +58,12 @@ const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete 
       
       {/* Botões de Editar e Excluir */}
       <HStack space={2}>
-        <IconButton
-          icon={<AntDesign name="edit" size={24} />}
-          onPress={() => setIsEditMode(!isEditMode)} // Alterna entre modo de edição
-        />
+        {!isEditMode && ( // Só mostra o ícone de editar quando não estiver no modo de edição
+          <IconButton
+            icon={<AntDesign name="edit" size={24} />}
+            onPress={() => setIsEditMode(true)} // Ativa o modo de edição
+          />
+        )}
         <IconButton
           icon={<MaterialIcons name="delete" size={24} />}
           onPress={() => setIsModalOpen(true)} // Abre o modal de confirmação para excluir
