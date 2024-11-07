@@ -1,5 +1,3 @@
-// src/screens/TarefasScreen.tsx
-
 import React from 'react';
 import { View } from 'native-base';
 import AdicionarTarefa from '../components/AdicionarTarefa';
